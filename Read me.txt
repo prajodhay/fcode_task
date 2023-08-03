@@ -1,0 +1,15 @@
+<--------------------------------Working------------------------------------->
+
+1)Mak1e sure that all files are located in same directory,
+
+2)Make sure you have an active internet connection as the application fetches the data from the data.json file using JavaScript's Fetch API.
+
+3)Using an IDE Open the index.html file in a web browser (e.g., Google Chrome, Mozilla Firefox, etc.)
+
+4application will load and display the user groups based on the distance criteria, calculated using the provided calculateDistance function. The user groups will be displayed along with the highest and lowest group size in the respective group containers.
+
+5)Click Compute to perform the computation and result will be displayed. 
+<----------------------------------------------------------------------------->
+
+ If you have any questions or need further assistance, feel free to reach out at prajodhayj@gmail.com , Happy reading!
+    

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Groups</title>
+</head>
+<body>
+    <h1>User Groups</h1>
+    <div id="groups" class="group-container"></div>
+    <div id="summary" class="summary-container"></div>
+    <div id="background-image-example"></div>
+
+    <script>
+        // Function to calculate the distance between two geo locations in kilometers
+        function calculateDistance(geo1, geo2) {
+            const lat1 = geo1.latitude;
+            const lon1 = geo1.longitude;
+            const lat2 = geo2.latitude;
+            const lon2 = geo2.longitude;
+
+            const R = 6371; // Earth's radius in km
+            const dLat = (lat2 - lat1) * (Math.PI / 180);
+            const dLon = (lon2 - lon1) * (Math.PI / 180);
+            const a =
+                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            const distance = R * c;
+            return distance;
+        }
+
+        // Function to group users based on the distance criteria
+        function groupUsers(users) {
+            const groups = [];
+            while (users.length > 0) {
+                const user = users.shift();
+                const group = [user];
+                for (let i = users.length - 1; i >= 0; i--) {
+                    const distance = calculateDistance(user.address.geo, users[i].address.geo);
+                    if (distance <= 1000) {
+                        group.push(users.splice(i, 1)[0]);
+                    }
+                }
+                groups.push(group);
+            }
+            return groups;
+        }
+
+        // Function to display the user groups
+        function displayGroups(groups) {
+            const groupsDiv = document.getElementById('groups');
+            groupsDiv.innerHTML = '';
+
+            let highestGroupSize = 0;
+            let lowestGroupSize = groups[0].length;
+
+            for (let i = 0; i < groups.length; i++) {
+                const group = groups[i];
+                const groupDiv = document.createElement('div');
+                groupDiv.classList.add('group');
+
+                const groupTitle = document.createElement('h2');
+                groupTitle.innerText = `Group ${i + 1}`;
+
+                const groupMembers = document.createElement('ul');
+                for (const user of group) {
+                    const member = document.createElement('li');
+                    member.innerText = user.fullName;
+                    groupMembers.appendChild(member);
+                }
+
+                groupDiv.appendChild(groupTitle);
+                groupDiv.appendChild(groupMembers);
+                groupsDiv.appendChild(groupDiv);
+
+                // Update highest and lowest group size
+                const groupSize = group.length;
+                highestGroupSize = Math.max(highestGroupSize, groupSize);
+                lowestGroupSize = Math.min(lowestGroupSize, groupSize);
+            }
+
+ // Display the highest and lowest group size
+ const summaryDiv = document.getElementById('summary');
+
+// Find the group with the highest and lowest number of members
+const highestGroup = groups.find(group => group.length === highestGroupSize);
+const lowestGroup = groups.find(group => group.length === lowestGroupSize);
+
+summaryDiv.innerHTML = `
+  <br>Total Number of Groups: ${groups.length}<br>
+  Group ${groups.indexOf(highestGroup) + 1} has the highest number of members (${highestGroupSize} members)<br>
+  Group ${groups.indexOf(lowestGroup) + 1} has the lowest number of members (${lowestGroupSize} members)
+`;
+
+        }
+
+        // Fetch and process data
+        fetch('data.json')
+            .then(response => response.json())
+            .then(data => {
+                const groups = groupUsers(data);
+                displayGroups(groups);
+            })
+            .catch(error => console.error('Error fetching data:', error));
+    </script>
+
+    <style>
+        .group-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .group {
+            border: 1px solid #000000;
+            padding: 5px;
+            /* Set the width to display the groups in series */
+            width: 200px;
+        }
+        .group h2 {
+            margin: 0;
+        }
+        .group ul {
+            padding-left: 0;
+            margin: 0;
+            list-style-type: none;
+        }
+        .group li {
+           
+            padding: 5px;
+        }
+        #summary {
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            margin: 20px;
+            padding: 10px;
+            text-align: center;
+        }
+    
+
+
+
+
+
+        body {
+  /* Set the background image URL */
+  background-image: url('https://images.pexels.com/photos/4466492/pexels-photo-4466492.jpeg?cs=srgb&dl=pexels-karolina-grabowska-4466492.jpg&fm=jpg');
+
+  /* Set the background image size */
+  background-size: cover;
+
+  /* Set the background image position */
+  background-position: center;
+
+  /* Set the background image to repeat if necessary */
+  background-repeat: no-repeat;
+}
+
+
+    </style>
+</body>
+</html>
